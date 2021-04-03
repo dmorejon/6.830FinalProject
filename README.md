@@ -9,5 +9,7 @@ Notes:
     - Select the user levels Allowed to merge and Allowed to push.
     - https://docs.github.com/en/github/administering-a-repository/about-protected-branches
 
+- If you make a pull request, link it to the issue by putting "resolves #<issue number>" in the title of the PR, or one of the other words. Link to documentation: https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue
+
 
 
