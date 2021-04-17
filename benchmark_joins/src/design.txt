@@ -1,0 +1,13 @@
+Table "Interface":
+  subclass constructor: Table(filepath, RecordDesc)
+  Record ReadNextRecord()
+  [Record] ReadNextBlock()
+  (Datatype,) getRecordDesc()
+  i64 NumRecords()
+
+Record "Interface"/Class{T::<Integer}:
+  subclass constructor: Record([data{T}])
+  getColumn(int i)
+  i32 getNumColumns()
+
+
