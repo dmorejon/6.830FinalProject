@@ -38,6 +38,7 @@ impl<'a, T> NestedLoopsJoin<'a, T> where T: Clone + Debug + FromStr + PartialEq,
           join_result.push(join_record);
         }
       }
+      self.right.rewind();
     }
 
     join_result

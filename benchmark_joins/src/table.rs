@@ -40,4 +40,8 @@ impl<T> SimpleTable<T> where T: Clone + Debug + FromStr, <T as FromStr>::Err: De
     self.index += 1;
     record.clone()
   }
+
+  pub fn rewind(&mut self) {
+    self.index = 0;
+  }
 }
