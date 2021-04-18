@@ -18,23 +18,33 @@ use std::fmt::Debug;
 //   } 
 // }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Record<T> {
-  data: Vec<T>
+  fields: Vec<T>
 }
 
 impl<T> Record<T> where T: Clone + Debug {
   pub fn new(input_record: &[T]) -> Record<T> {
     Record {
-      data: input_record.to_vec()
+      fields: input_record.to_vec()
     }
   }
 
+  pub fn merge(r1: &Record<T>, r2: &Record<T>) -> Record<T> {
+    // Combine the record fields
+    let mut combined_fields = r1.fields.clone();
+    let mut fields2 = r2.fields.clone();
+    combined_fields.append(&mut fields2);
+
+    // New record from combined fields
+    Record::new(combined_fields.as_slice())
+  }
+
   pub fn get_column(&self, i: usize) -> &T {
-    &self.data[i]
+    &self.fields[i]
   }
 
   pub fn get_num_columns(&self) -> usize {
-    self.data.len()
+    self.fields.len()
   } 
 }

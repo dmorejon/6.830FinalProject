@@ -1,32 +1,26 @@
 mod readtable;
 mod record;
 mod table;
+mod join;
 
-use std::process;
+use crate::join::NestedLoopsJoin;
 
 use crate::table::SimpleTable;
 
 fn main() {
-	let file_name: &str = "tables/dummy.csv";
-
-	match readtable::fetch_records::<i32>(file_name) {
-		Ok(table) => {
-			println!("{:?}", table);
-		},
-		Err(e) => {
-			println!("error running example: {}", e);
-			process::exit(1);
-		}
-	}
-
 	let data = [1, 2, 3, 420];
 	let rec = record::Record::new(&data);
 	println!("{}", rec.get_column(3));
 	println!("{}", rec.get_num_columns());
 
-	let mut table: SimpleTable<i32> = SimpleTable::new(file_name);
-	println!("Number of records {:?}", table.get_num_records());
-	for i in 1..=table.get_num_records() {
-		println!("Record {:?} : {:?}", i, table.read_next_record());
+	let table1_name: &str = "tables/small1.csv";
+	let table2_name: &str = "tables/small2.csv";
+
+	let mut table1: SimpleTable<i32> = SimpleTable::new(table1_name);
+	let mut table2: SimpleTable<i32> = SimpleTable::new(table2_name);
+
+	let mut join_algo: NestedLoopsJoin<i32> = NestedLoopsJoin::new(&mut table1, &mut table2);
+	for r in join_algo.do_equi_join(2, 0).iter() {
+		println!("Join record {:?}", r);
 	}
 }

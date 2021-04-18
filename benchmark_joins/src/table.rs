@@ -35,9 +35,9 @@ impl<T> SimpleTable<T> where T: Clone + Debug + FromStr, <T as FromStr>::Err: De
     return self.records.len();
   }
 
-  pub fn read_next_record(&mut self) -> &Record<T> {
-    let record = &self.records[self.index];
+  pub fn read_next_record(&mut self) -> Record<T> {
+    let record = self.records[self.index].clone();
     self.index += 1;
-    record
+    record.clone()
   }
 }
