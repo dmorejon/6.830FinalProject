@@ -17,8 +17,8 @@ fn main() {
 	let table1_name: &str = "tables/small1.csv";
 	let table2_name: &str = "tables/small2.csv";
 
-	let mut table1: SimpleTable<i32> = SimpleTable::new(table1_name);
-	let mut table2: SimpleTable<i32> = SimpleTable::new(table2_name);
+	let mut table1: SimpleTable = SimpleTable::new(table1_name);
+	let mut table2: SimpleTable = SimpleTable::new(table2_name);
 
 	// let mut join_algo: NestedLoopsJoin<i32> = NestedLoopsJoin::new(&mut table1, &mut table2);
 // 	for r in join_algo.equi_join(2, 0).iter() {
