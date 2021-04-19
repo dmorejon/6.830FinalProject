@@ -1,36 +1,19 @@
 use std::clone::Clone;
 use std::fmt::Debug;
 
-// pub struct Record<T, const LENGTH: usize> {
-//   pub data:[T; LENGTH],
-
-// }
-
-// impl<T, const LENGTH: usize> Record<T, LENGTH> {
-//   //TODO: see how to construct, if it is ugly then 
-//   //      write a "new()" method or something
-//   pub fn get_column(&self, i: usize) -> &T {
-//     &self.data[i]
-//   }
-
-//   pub fn get_num_columns(&self) -> usize {
-//     LENGTH
-//   } 
-// }
-
 #[derive(Debug, Clone)]
-pub struct Record<T> {
-  fields: Vec<T>
+pub struct Record {
+  fields: Vec<i32>
 }
 
-impl<T> Record<T> where T: Clone + Debug {
-  pub fn new(input_record: &[T]) -> Record<T> {
+impl Record where{
+  pub fn new(input_record: &[i32]) -> Record {
     Record {
       fields: input_record.to_vec()
     }
   }
 
-  pub fn merge(r1: &Record<T>, r2: &Record<T>) -> Record<T> {
+  pub fn merge(r1: &Record, r2: &Record) -> Record {
     // Combine the record fields
     let mut combined_fields = r1.fields.clone();
     let mut fields2 = r2.fields.clone();
@@ -40,7 +23,7 @@ impl<T> Record<T> where T: Clone + Debug {
     Record::new(combined_fields.as_slice())
   }
 
-  pub fn get_column(&self, i: usize) -> &T {
+  pub fn get_column(&self, i: usize) -> &i32 {
     &self.fields[i]
   }
 
