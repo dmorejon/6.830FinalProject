@@ -1,6 +1,5 @@
 use std::clone::Clone;
 use std::cmp::min;
-
 use crate::record::Record;
 use crate::readtable::fetch_records;
 
@@ -19,8 +18,13 @@ impl SimpleTable {
     };
 
     // Get raw table contents from on-disk table
-    let raw_table: Vec<Vec<i32>> = fetch_records(filepath).unwrap();
-
+    let raw_table: Vec<Vec<i32>>;
+    match fetch_records(filepath) {
+      Err(e) => panic!("{:?}", e),
+      Ok(fetched_raw_table) => {
+        raw_table = fetched_raw_table;
+      }
+    }
     for raw_record in raw_table.iter() {
       // Add each raw record as proper record to the table
       let record: Record = Record::new(raw_record);

@@ -21,14 +21,14 @@ fn main() {
 	let mut table1: SimpleTable = SimpleTable::new(table1_name);
 	let mut table2: SimpleTable = SimpleTable::new(table2_name);
 
-    println!("NL:");
+  println!("NL:");
 	let mut join_algo: NestedLoopsJoin = NestedLoopsJoin::new(&mut table1, &mut table2);
 	for r in join_algo.equi_join(2, 0).iter() {
 		println!("Join record {:?}", r);
 	}
 
-    println!("blockNL:");
-    let mut join_algo: BlockNL = BlockNL::new(&mut table1, &mut table2);
+  println!("blockNL:");
+  let mut join_algo: BlockNL = BlockNL::new(&mut table1, &mut table2);
 	for r in join_algo.equi_join(2, 0, 2, 2).iter() {
 		println!("Join record {:?}", r);
 	}

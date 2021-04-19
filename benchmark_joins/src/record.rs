@@ -6,7 +6,8 @@ pub struct Record {
   fields: Vec<i32>
 }
 
-impl Record where{
+
+impl Record {
   pub fn new(input_record: &[i32]) -> Record {
     Record {
       fields: input_record.to_vec()
