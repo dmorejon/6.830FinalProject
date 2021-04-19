@@ -3,7 +3,8 @@ mod record;
 mod table;
 mod join;
 
-use crate::join::JoinAlg;
+use crate::join::NestedLoopsJoin;
+use crate::join::BlockNL;
 
 use crate::table::SimpleTable;
 
@@ -20,12 +21,15 @@ fn main() {
 	let mut table1: SimpleTable = SimpleTable::new(table1_name);
 	let mut table2: SimpleTable = SimpleTable::new(table2_name);
 
-	// let mut join_algo: NestedLoopsJoin<i32> = NestedLoopsJoin::new(&mut table1, &mut table2);
-// 	for r in join_algo.equi_join(2, 0).iter() {
-// 		println!("Join record {:?}", r);
-// 	}
-    let result = join::run_join(JoinAlg::NestedLoops, &mut table1, &mut table2, 2, 0);
-    for r in result.iter() {
-        println!("Join record {:?}", r);
-    }
+  println!("NL:");
+	let mut join_algo: NestedLoopsJoin = NestedLoopsJoin::new(&mut table1, &mut table2);
+	for r in join_algo.equi_join(2, 0).iter() {
+		println!("Join record {:?}", r);
+	}
+
+  println!("blockNL:");
+  let mut join_algo: BlockNL = BlockNL::new(&mut table1, &mut table2);
+	for r in join_algo.equi_join(2, 0, 2, 2).iter() {
+		println!("Join record {:?}", r);
+	}
 }

@@ -1,3 +1,5 @@
+use std::clone::Clone;
+use std::cmp::min;
 use crate::record::Record;
 use crate::readtable::fetch_records;
 
@@ -23,7 +25,6 @@ impl SimpleTable {
         raw_table = fetched_raw_table;
       }
     }
-    
     for raw_record in raw_table.iter() {
       // Add each raw record as proper record to the table
       let record: Record = Record::new(raw_record);
@@ -41,6 +42,13 @@ impl SimpleTable {
     let record = self.records[self.index].clone();
     self.index += 1;
     record.clone()
+  }
+
+  pub fn read_next_block(&mut self, block_sz: usize) -> &[Record] {
+    let end_index = min(self.index+block_sz, self.records.len());
+    let block = &self.records[self.index..end_index];
+    self.index = end_index;
+    block
   }
 
   pub fn rewind(&mut self) {
