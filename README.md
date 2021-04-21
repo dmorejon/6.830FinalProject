@@ -1,6 +1,47 @@
 # 6.830FinalProject
 
-Notes: 
+## Benchmark Running Instructions
+
+To run benchmarking, navigate to `6.830FinalProject/benchmark_joins`. From there, you can run 
+
+```cargo run [table1_name] [table2_name] [outfile_json]```
+
+And that will run the different joins, time them, and put the results in `outfile_json`. Specifically, this will **overrwite the contents of file**. For example, running 
+
+```cargo run tables/small1.csv tables/small2.csv experiments/smalls.json```
+
+will generate `experiments/smalls.json` and have content similar to:
+```JSON
+[
+   {
+      "join_type":"NLJoin",
+      "execution_time_nanos":65383,
+      "outer_table":"tables/small1.csv",
+      "inner_table":"tables/small2.csv"
+   },
+   {
+      "join_type":"NLJoin",
+      "execution_time_nanos":63394,
+      "outer_table":"tables/small2.csv",
+      "inner_table":"tables/small1.csv"
+   },
+   {
+      "join_type":"BNLJoin",
+      "execution_time_nanos":23509,
+      "outer_table":"tables/small1.csv",
+      "inner_table":"tables/small2.csv"
+   },
+   {
+      "join_type":"BNLJoin",
+      "execution_time_nanos":13594,
+      "outer_table":"tables/small2.csv",
+      "inner_table":"tables/small1.csv"
+   }
+]
+
+```
+
+## Notes
 
 - only David can set the 1 reviewer limit for the next two weeks (to my knowledge). Atm I think its prolly fine to just make the development branch protectted. Here are the instructions I googled:
     - Navigate to your project's Settings > Repository.
