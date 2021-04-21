@@ -38,6 +38,10 @@ impl SimpleTable {
     return self.records.len();
   }
 
+  pub fn get_num_columns_per_record(&self) -> usize{
+    return self.records.get(0).unwrap().get_num_columns();
+  }
+
   pub fn read_next_record(&mut self) -> Record {
     let record = self.records[self.index].clone();
     self.index += 1;

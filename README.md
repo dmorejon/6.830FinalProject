@@ -15,30 +15,65 @@ will generate `experiments/smalls.json` and have content similar to:
 [
    {
       "join_type":"NLJoin",
-      "execution_time_nanos":65383,
-      "outer_table":"tables/small1.csv",
-      "inner_table":"tables/small2.csv"
+      "execution_time_nanos":72555,
+      "outer_table":{
+         "table_name":"tables/small1.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "inner_table":{
+         "table_name":"tables/small2.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "num_emitted_records":3
    },
    {
       "join_type":"NLJoin",
-      "execution_time_nanos":63394,
-      "outer_table":"tables/small2.csv",
-      "inner_table":"tables/small1.csv"
+      "execution_time_nanos":63607,
+      "outer_table":{
+         "table_name":"tables/small2.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "inner_table":{
+         "table_name":"tables/small1.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "num_emitted_records":3
    },
    {
       "join_type":"BNLJoin",
-      "execution_time_nanos":23509,
-      "outer_table":"tables/small1.csv",
-      "inner_table":"tables/small2.csv"
+      "execution_time_nanos":38171,
+      "outer_table":{
+         "table_name":"tables/small1.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "inner_table":{
+         "table_name":"tables/small2.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "num_emitted_records":3
    },
    {
       "join_type":"BNLJoin",
-      "execution_time_nanos":13594,
-      "outer_table":"tables/small2.csv",
-      "inner_table":"tables/small1.csv"
+      "execution_time_nanos":22863,
+      "outer_table":{
+         "table_name":"tables/small2.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "inner_table":{
+         "table_name":"tables/small1.csv",
+         "num_records":6,
+         "columns_per_record":3
+      },
+      "num_emitted_records":3
    }
 ]
-
 ```
 
 ## Notes
