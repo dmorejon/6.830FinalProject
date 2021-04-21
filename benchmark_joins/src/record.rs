@@ -32,3 +32,16 @@ impl Record {
     self.fields.len()
   } 
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  
+  #[test]
+  fn test_record_works() {
+    let data = [1, 2, 3, 420];
+    let rec = Record::new(&data);
+    assert_eq!(420, *rec.get_column(3));
+    assert_eq!(4, rec.get_num_columns());
+  }
+}
