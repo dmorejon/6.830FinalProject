@@ -1,5 +1,15 @@
+use serde::{Serialize, Deserialize};
+use strum_macros::EnumIter;
+
 use crate::record::Record;
 use crate::SimpleTable;
+
+#[derive(EnumIter, Serialize, Deserialize, Debug, Clone)]
+pub enum JoinAlgos {
+  NLJoin,
+  BNLJoin,
+}
+
 
 pub struct NestedLoopsJoin<'a> {
   left: &'a mut SimpleTable,
@@ -46,29 +56,33 @@ impl<'a> NestedLoopsJoin<'a> {
 pub struct BlockNL<'a> {
   left: &'a mut SimpleTable,
   right: &'a mut SimpleTable,
+  l_block_sz: usize,
+  r_block_sz: usize,
 }
 
 impl<'a> BlockNL<'a> {
   
-  pub fn new(left: &'a mut SimpleTable, right: &'a mut SimpleTable) -> Self {
+  pub fn new(left: &'a mut SimpleTable, right: &'a mut SimpleTable, l_block_sz: usize, r_block_sz: usize) -> Self {
     Self {
       left,
-      right
+      right,
+      l_block_sz,
+      r_block_sz,
     }
   }
 
-  pub fn equi_join(&mut self, left_col: usize, right_col: usize, l_block_sz: usize, r_block_sz: usize) -> Vec<Record> {
+  pub fn equi_join(&mut self, left_col: usize, right_col: usize) -> Vec<Record> {
     // TODO: Remove the duplicated concatenation
     let mut join_result: Vec<Record> = Vec::new();
 
-    let left_num_blocks: usize = self.left.get_num_records() / l_block_sz;
-    let right_num_blocks: usize = self.right.get_num_records() / r_block_sz;
+    let left_num_blocks: usize = self.left.get_num_records() / self.l_block_sz;
+    let right_num_blocks: usize = self.right.get_num_records() / self.r_block_sz;
 
     for _l in 0..left_num_blocks {
-      let left_block = self.left.read_next_block(l_block_sz);
+      let left_block = self.left.read_next_block(self.l_block_sz);
 
       for _r in 0..right_num_blocks {
-        let right_block = self.right.read_next_block(r_block_sz);
+        let right_block = self.right.read_next_block(self.r_block_sz);
 
         for mut left_record in left_block {
           for mut right_record in right_block {
