@@ -1,11 +1,10 @@
 use std::clone::Clone;
 use std::cmp::Ordering;
 use std::fmt::Debug;
-use rand::{seq::SliceRandom, thread_rng};
 use std::panic;
 
 // Maximum fields in a record
-pub const M: usize = 100;
+pub const M: usize = 10;
 
 #[derive(Debug, Clone)]
 pub struct Record {
@@ -105,6 +104,7 @@ impl Eq for Record {}
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use rand::{seq::SliceRandom, thread_rng};
 
 	fn check_size(r: &Record, expected_size: usize) {
 		assert_eq!(expected_size, r.get_num_columns());
