@@ -15,7 +15,7 @@ pub struct Record {
 
 	// The next index to insert 
 	// a new column value into
-	field_insert_idx: usize,
+	tail: usize,
 }
 
 impl Record {
@@ -23,7 +23,7 @@ impl Record {
 		// New empty record
 		let mut new_record: Record = Record {
 			fields: [0; M],
-			field_insert_idx: 0
+			tail: 0
 		};
 		
 		// Add each input column
@@ -38,7 +38,7 @@ impl Record {
 		// New record
 		let mut nr: Record = Record {
 			fields: [0; M],
-			field_insert_idx: 0
+			tail: 0
 		};
 
 		// Add first record
@@ -60,7 +60,7 @@ impl Record {
 			panic!("OOB Capacity");
 		}
 		// Index OOB
-		if i >= self.field_insert_idx {
+		if i >= self.tail {
 			panic!("OOB Index")
 		}
 
@@ -68,17 +68,17 @@ impl Record {
 	}
 
 	pub fn get_num_columns(&self) -> usize {
-		self.field_insert_idx
+		self.tail
 	}
 
 	fn add_column(&mut self, value: i32) -> () {
 		// Check capacity to insert
-		if (self.field_insert_idx as usize) >= M {
+		if (self.tail as usize) >= M {
 			panic!("Insufficient capacity for insert");
 		} 
 		// Insert column and move to next spot placeholder
-		self.fields[self.field_insert_idx] = value;
-		self.field_insert_idx += 1;
+		self.fields[self.tail] = value;
+		self.tail += 1;
 	}
 }
 
