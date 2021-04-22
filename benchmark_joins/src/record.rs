@@ -1,4 +1,5 @@
 use std::clone::Clone;
+use std::cmp::Ordering;
 use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
@@ -33,12 +34,32 @@ impl Record {
   } 
 }
 
+impl Ord for Record {
+  fn cmp(&self, other: &Self) -> Ordering {
+      self.fields.cmp(&other.fields)
+  }
+}
+
+impl PartialOrd for Record {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+      Some(self.fields.cmp(&other.fields))
+  }
+}
+
+impl PartialEq for Record {
+  fn eq(&self, other: &Self) -> bool {
+      self.fields == other.fields
+  }
+}
+
+impl Eq for Record {}
+
 #[cfg(test)]
 mod tests {
   use super::*;
   
   #[test]
-  fn test_record_works() {
+  fn test_record() {
     let data = [1, 2, 3, 420];
     let rec = Record::new(&data);
     assert_eq!(420, *rec.get_column(3));

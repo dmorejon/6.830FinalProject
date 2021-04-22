@@ -1,5 +1,6 @@
 mod readtable;
 mod record;
+mod jointest;
 mod runner;
 mod table;
 mod join;
