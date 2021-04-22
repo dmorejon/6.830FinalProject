@@ -1,7 +1,6 @@
 use std::clone::Clone;
 use std::cmp::Ordering;
 use std::fmt::Debug;
-use rand::{seq::SliceRandom, thread_rng};
 use std::panic;
 
 // Maximum fields in a record
@@ -67,6 +66,12 @@ impl Record {
 		&self.fields[i]
 	}
 
+	pub fn get_column_values(&self) -> Vec<&i32> {
+		// self.fields.to_vec()
+		let mut fields = Vec::with_capacity(self.get_num_columns());
+		fields
+	}
+
 	pub fn get_num_columns(&self) -> usize {
 		self.tail
 	}
@@ -105,6 +110,7 @@ impl Eq for Record {}
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use rand::{seq::SliceRandom, thread_rng};
 
 	fn check_size(r: &Record, expected_size: usize) {
 		assert_eq!(expected_size, r.get_num_columns());
