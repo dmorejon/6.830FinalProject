@@ -34,6 +34,10 @@ impl SimpleTable {
     simple_table
   }
 
+  pub fn copy_to_vec_of_records(&self) -> Vec<Record> {
+    self.records.clone()
+  }
+
   pub fn get_num_records(&self) -> usize{
     return self.records.len();
   }

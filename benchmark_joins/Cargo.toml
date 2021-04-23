@@ -3,8 +3,15 @@ name = "benchmark_joins"
 version = "0.1.0"
 authors = ["Amir Fahat <amirf@mit.edu>", "David Morejon <dmorejon@mit.edu"]
 edition = "2018"
+default-run = "benchmark_joins"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "generate"
+path = "src/bin/generate/main.rs"
+
+[lib]
+name = "joinlib"
+src = "src/lib.rs"
 
 [dependencies]
 csv = "1.1"

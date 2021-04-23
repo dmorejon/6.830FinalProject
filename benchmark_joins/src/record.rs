@@ -42,18 +42,18 @@ impl Record {
 
 		// Add first record
 		for i in 0..r1.get_num_columns() {
-			nr.add_column(*r1.get_column(i));
+			nr.add_column(r1.get_column(i));
 		}
 
 		// Add second record
 		for i in 0..r2.get_num_columns() {
-			nr.add_column(*r2.get_column(i));
+			nr.add_column(r2.get_column(i));
 		}
 
 		nr
 	}
 
-	pub fn get_column(&self, i: usize) -> &i32 {
+	pub fn get_column(&self, i: usize) -> i32 {
 		// Capacity OOB
 		if i >= M {
 			panic!("OOB Capacity");
@@ -63,7 +63,26 @@ impl Record {
 			panic!("OOB Index")
 		}
 
-		&self.fields[i]
+		self.fields[i].clone()
+	}
+
+	pub fn set_column(&mut self, i: usize, value: i32) -> () {
+		// Capacity OOB
+		if i >= M {
+			panic!("OOB Capacity");
+		}
+		// Index OOB
+		if i >= self.tail {
+			panic!("OOB Index")
+		}
+
+		self.fields[i] = value;
+	}
+
+	pub fn get_column_values(&self) -> Vec<&i32> {
+		// self.fields.to_vec()
+		let fields = Vec::with_capacity(self.get_num_columns());
+		fields
 	}
 
 	pub fn get_num_columns(&self) -> usize {
@@ -111,7 +130,7 @@ mod tests {
 	}
 
 	fn check_column(r: &Record, col_idx: usize, expected_value: i32) {
-		assert_eq!(expected_value, *r.get_column(col_idx));
+		assert_eq!(expected_value, r.get_column(col_idx));
 	}
 
 	fn check_columns_in_order(r: &Record, columns: &[i32]) {
