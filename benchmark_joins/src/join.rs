@@ -100,4 +100,12 @@ impl<'a> BlockNL<'a> {
     self.left.rewind();
     join_result
   }
+
+  pub fn get_left_block_size(&self) -> usize {
+    return self.l_block_sz;
+  }
+
+  pub fn get_right_block_size(&self) -> usize {
+    return self.r_block_sz;
+  }
 }

@@ -1,6 +1,6 @@
 
 use crate::record::Record;
-use std::time::Instant;
+use std::{time::Instant};
 use strum::IntoEnumIterator;
 use serde::{Deserialize, Serialize};
 
@@ -17,8 +17,15 @@ pub struct Table {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct JoinAlgoDetails {
+	join_name: JoinAlgos,
+	left_block_size: usize,
+	right_block_size: usize,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct JoinRunResult {
-	join_type: JoinAlgos,
+	join_type: JoinAlgoDetails,
 	execution_time_nanos: u128,
 	outer_table: Table,
 	inner_table: Table,
@@ -47,7 +54,11 @@ fn run_bnl_join(bnlj: &mut BlockNL, left_col: usize, right_col: usize, t1: Table
 
 	// Output result
 	JoinRunResult {
-		join_type: JoinAlgos::BNLJoin,
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::BNLJoin,
+			left_block_size: bnlj.get_left_block_size(),
+			right_block_size: bnlj.get_right_block_size(),
+		},
 		execution_time_nanos: end.duration_since(start).as_nanos(),
 		outer_table: t1,
 		inner_table: t2,
@@ -64,7 +75,11 @@ fn run_nl_join(nlj: &mut NestedLoopsJoin, left_col: usize, right_col: usize, t1:
 
 	// Output result
 	JoinRunResult {
-		join_type: JoinAlgos::NLJoin,
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::NLJoin,
+			left_block_size: 0,
+			right_block_size: 0,
+		},
 		execution_time_nanos: end.duration_since(start).as_nanos(),
 		outer_table: t1,
 		inner_table: t2,

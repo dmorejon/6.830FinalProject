@@ -14,8 +14,12 @@ will generate `experiments/smalls.json` and have content similar to:
 ```JSON
 [
    {
-      "join_type":"NLJoin",
-      "execution_time_nanos":72555,
+      "join_type":{
+         "join_name":"NLJoin",
+         "left_block_size":0,
+         "right_block_size":0
+      },
+      "execution_time_nanos":28922,
       "outer_table":{
          "table_name":"tables/small1.csv",
          "num_records":6,
@@ -29,8 +33,12 @@ will generate `experiments/smalls.json` and have content similar to:
       "num_emitted_records":3
    },
    {
-      "join_type":"NLJoin",
-      "execution_time_nanos":63607,
+      "join_type":{
+         "join_name":"NLJoin",
+         "left_block_size":0,
+         "right_block_size":0
+      },
+      "execution_time_nanos":12896,
       "outer_table":{
          "table_name":"tables/small2.csv",
          "num_records":6,
@@ -44,8 +52,12 @@ will generate `experiments/smalls.json` and have content similar to:
       "num_emitted_records":3
    },
    {
-      "join_type":"BNLJoin",
-      "execution_time_nanos":38171,
+      "join_type":{
+         "join_name":"BNLJoin",
+         "left_block_size":2,
+         "right_block_size":2
+      },
+      "execution_time_nanos":157570,
       "outer_table":{
          "table_name":"tables/small1.csv",
          "num_records":6,
@@ -59,8 +71,12 @@ will generate `experiments/smalls.json` and have content similar to:
       "num_emitted_records":3
    },
    {
-      "join_type":"BNLJoin",
-      "execution_time_nanos":22863,
+      "join_type":{
+         "join_name":"BNLJoin",
+         "left_block_size":2,
+         "right_block_size":2
+      },
+      "execution_time_nanos":116060,
       "outer_table":{
          "table_name":"tables/small2.csv",
          "num_records":6,
