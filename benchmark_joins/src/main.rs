@@ -4,7 +4,6 @@ mod jointest;
 mod runner;
 mod table;
 mod join;
-mod table_generator;
 
 use crate::runner::run_all_joins;
 use crate::runner::JoinRunResult;
