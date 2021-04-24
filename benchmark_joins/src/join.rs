@@ -133,24 +133,24 @@ impl<'a> SimpleHashJoin<'a> {
     let left_num_records: usize = self.left.get_num_records();
     let right_num_records: usize = self.right.get_num_records();
 
-    for _l in 0..left_num_records {
-      let left_record: Record = self.left.read_next_record().clone();
-      hashtable.entry(left_record.get_column(left_col)).or_insert(Vec::new()).push(left_record);
+    for _l in 0..right_num_records {
+      let right_record: Record = self.right.read_next_record().clone();
+      hashtable.entry(right_record.get_column(right_col)).or_insert(Vec::new()).push(right_record);
     }
-    self.left.rewind();
+    self.right.rewind();
 
-    for _r in 0..right_num_records {
-      let mut right_record: Record = self.right.read_next_record().clone();
-      let matches = match hashtable.get(&right_record.get_column(right_col)) {
+    for _r in 0..left_num_records {
+      let mut left_record: Record = self.left.read_next_record().clone();
+      let matches = match hashtable.get(&left_record.get_column(left_col)) {
         None => continue,
         Some(v) => v
       };
       for record in matches {
-        let join_record: Record = Record::merge(&mut record.clone(), &mut right_record);
+        let join_record: Record = Record::merge(&mut left_record, &mut record.clone());
           join_result.push(join_record);
       }
     }
-    self.right.rewind();
+    self.left.rewind();
     join_result
   }
 }
