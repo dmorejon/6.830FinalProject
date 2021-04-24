@@ -92,6 +92,13 @@ will generate `experiments/smalls.json` and have content similar to:
 ]
 ```
 
+## Table Generation Instructions
+   To generate a table, go to `src/bin/generate/main.rs` and change the config structs, then run with
+   ```cargo run --bin generate```
+
+   You must create the appropriate `tables/joinN/` and `tables/joinN/rights/` directories if they do not
+   exist.
+
 ## Notes
 
 - only David can set the 1 reviewer limit for the next two weeks (to my knowledge). Atm I think its prolly fine to just make the development branch protectted. Here are the instructions I googled:

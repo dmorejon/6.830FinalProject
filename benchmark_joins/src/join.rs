@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use strum_macros::EnumIter;
 
 use crate::record::Record;
-use crate::SimpleTable;
+use crate::table::SimpleTable;
 
 #[derive(EnumIter, Serialize, Deserialize, Debug, Clone)]
 pub enum JoinAlgos {

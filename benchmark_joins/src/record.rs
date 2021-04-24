@@ -81,7 +81,10 @@ impl Record {
 
 	pub fn get_column_values(&self) -> Vec<&i32> {
 		// self.fields.to_vec()
-		let fields = Vec::with_capacity(self.get_num_columns());
+		let mut fields = Vec::with_capacity(self.get_num_columns());
+		for field in &self.fields[0..self.tail] {
+			fields.push(field);
+		}
 		fields
 	}
 

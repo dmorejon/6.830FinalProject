@@ -4,10 +4,10 @@ use std::{time::Instant};
 use strum::IntoEnumIterator;
 use serde::{Deserialize, Serialize};
 
-use crate::BlockNL;
-use crate::NestedLoopsJoin;
-use crate::SimpleTable;
-use crate::JoinAlgos;
+use crate::join::BlockNL;
+use crate::join::NestedLoopsJoin;
+use crate::join::JoinAlgos;
+use crate::table::SimpleTable;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Table {

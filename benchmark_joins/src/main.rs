@@ -12,11 +12,6 @@ use std::fs::File;
 use std::env;
 use std::process;
 
-use crate::join::JoinAlgos;
-use crate::join::NestedLoopsJoin;
-use crate::join::BlockNL;
-use crate::table::SimpleTable;
-
 fn main() {
 	// Expect two tables and an output file
 	let args: Vec<String> = env::args().collect();
