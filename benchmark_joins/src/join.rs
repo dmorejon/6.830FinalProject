@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use strum_macros::EnumIter;
 
@@ -8,6 +9,7 @@ use crate::table::SimpleTable;
 pub enum JoinAlgos {
   NLJoin,
   BNLJoin,
+  SimpleHashJoin,
 }
 
 
@@ -85,7 +87,6 @@ impl<'a> BlockNL<'a> {
         let right_block = self.right.read_next_block(self.r_block_sz);
 
         for mut left_record in left_block {
-          println!("left_record: {:?}", left_record);
           for mut right_record in right_block {
             if left_record.get_column(left_col) == right_record.get_column(right_col) {
               // Join condition is met ==> new record 
@@ -107,5 +108,49 @@ impl<'a> BlockNL<'a> {
 
   pub fn get_right_block_size(&self) -> usize {
     return self.r_block_sz;
+  }
+}
+
+pub struct SimpleHashJoin<'a> {
+  left: &'a mut SimpleTable,
+  right: &'a mut SimpleTable,
+}
+
+impl<'a> SimpleHashJoin<'a> {
+  
+  pub fn new(left: &'a mut SimpleTable, right: &'a mut SimpleTable) -> Self {
+    Self {
+      left,
+      right
+    }
+  }
+
+  pub fn equi_join(&mut self, left_col: usize, right_col: usize) -> Vec<Record> {
+    // TODO: Remove the duplicated concatenation
+    let mut join_result: Vec<Record> = Vec::new();
+    let mut hashtable: HashMap<i32, Vec<Record>> = HashMap::new();
+
+    let left_num_records: usize = self.left.get_num_records();
+    let right_num_records: usize = self.right.get_num_records();
+
+    for _l in 0..left_num_records {
+      let left_record: Record = self.left.read_next_record().clone();
+      hashtable.entry(left_record.get_column(left_col)).or_insert(Vec::new()).push(left_record);
+    }
+    self.left.rewind();
+
+    for _r in 0..right_num_records {
+      let mut right_record: Record = self.right.read_next_record().clone();
+      let matches = match hashtable.get(&right_record.get_column(right_col)) {
+        None => continue,
+        Some(v) => v
+      };
+      for record in matches {
+        let join_record: Record = Record::merge(&mut record.clone(), &mut right_record);
+          join_result.push(join_record);
+      }
+    }
+    self.right.rewind();
+    join_result
   }
 }
