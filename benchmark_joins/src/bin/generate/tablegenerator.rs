@@ -34,26 +34,26 @@ pub fn generate_table(num_rows: usize, num_cols: usize) -> Vec<Record> {
 	let mut table: Vec<Record> = Vec::with_capacity(num_rows);
 	let mut rng = rand::thread_rng();
 	
-	for row in 0..num_rows {
-		let mut fields: Vec<i32> = Vec::with_capacity(num_cols); 
+	for _row in 0..num_rows {
+		let mut fields: Vec<i32> = vec![0; num_cols];
 		for col in 0..num_cols {
 			let field = rng.gen::<i32>();
 			fields[col] = field;
 		}
 		let record = Record::new(fields.as_slice());
-		table[row] = record;
+		table.push(record);
 	}
 
 	table
 }
 
-pub fn write_table(table: Vec<Record>, path: &str) -> () {
+pub fn write_table(table: &Vec<Record>, path: &str) -> () {
 	let mut writer = Writer::from_path(path).unwrap();
 	let num_cols: usize = table.get(0).unwrap().get_num_columns();
 	
 	// Write header
 	let mut header: Vec<String> = Vec::with_capacity(num_cols);
-	for col in 1..num_cols {
+	for col in 1..=num_cols {
 		let mut column_name: String = "col".to_owned();
 		column_name.push_str(&col.to_string());
 		header.push(column_name);
@@ -77,7 +77,7 @@ pub fn write_table(table: Vec<Record>, path: &str) -> () {
 
 pub fn generate_and_write_table(num_rows: usize, num_cols: usize, path: &str) -> () {
 	let table: Vec<Record> = generate_table(num_rows, num_cols);
-	write_table(table, path);
+	write_table(&table, path);
 }
 
 // given a left table, make new table based on following:
@@ -113,7 +113,7 @@ pub fn generate_right_table(left_table: Vec<Record>,
 														selectivity: f64,
 														left_col: usize,
 														right_col: usize) -> Vec<Record> {
-	assert!((left_table.len() as f64) * selectivity >= num_rows as f64);
+	assert!((left_table.len() as f64) * selectivity <= num_rows as f64);
 
 	// Assert num_rows >= matches
 
