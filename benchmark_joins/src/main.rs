@@ -1,12 +1,5 @@
-mod readtable;
-mod record;
-mod jointest;
-mod runner;
-mod table;
-mod join;
-
-use crate::runner::run_all_joins;
-use crate::runner::JoinRunResult;
+use joinlib::runner::run_all_joins;
+use joinlib::runner::JoinRunResult;
 use std::path::Path;
 use std::fs::File;
 use std::env;
@@ -30,7 +23,7 @@ fn main() {
 	};
 
 	// Profile our joins on the input tables
-	let results: Vec<JoinRunResult> = run_all_joins(table1_name, table2_name, 2, 0, 2, 2);
+	let results: Vec<JoinRunResult> = run_all_joins(table1_name, table2_name, 5, 5, 2, 2);
 
 	// Write experiment run data to output file
 	match serde_json::to_writer(outfile, &results) {

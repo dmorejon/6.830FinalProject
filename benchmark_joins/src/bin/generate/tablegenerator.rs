@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::HashSet;
 extern crate joinlib;
 use joinlib::record::Record;
@@ -43,7 +44,8 @@ pub fn generate_table(num_rows: usize, num_cols: usize) -> Vec<Record> {
 		let record = Record::new(fields.as_slice());
 		table.push(record);
 	}
-
+	assert!(table.len() == num_rows);
+	assert!(table[0].get_num_columns() == num_cols);
 	table
 }
 
@@ -115,11 +117,14 @@ pub fn generate_right_table(left_table: Vec<Record>,
 														right_col: usize) -> Vec<Record> {
 	assert!((left_table.len() as f64) * selectivity <= num_rows as f64);
 
-	// Assert num_rows >= matches
-
   // Normalize the number of records that the join should produce
 	let matches: f64 = (left_table.len() as f64) * selectivity;
-  let rounded_matches: usize = matches.round() as usize; // TODO problem due to precision
+  let rounded_matches: usize = matches.floor() as usize; // TODO problem due to precision
+	println!("rounded matches: {:?}", rounded_matches);
+
+	// Assert num_rows >= matches
+	assert!(num_rows as f64 >= matches);
+	assert!(num_rows >= rounded_matches);
 
   // Construct the missing value picker
 	let left_col_set: HashSet<i32> = get_table_column_values(&left_table, left_col);
@@ -134,20 +139,29 @@ pub fn generate_right_table(left_table: Vec<Record>,
     let value: i32 = left_table.get(i).unwrap().get_column(left_col);
     let right_record: &mut Record = &mut right_table[i];
     right_record.set_column(right_col, value);
+		assert!(right_table.get(i).unwrap().get_column(right_col) == value);
   }
 
 	// Now fill in the remaing values from the missing value picker
-	for i in (num_rows - rounded_matches - 1)..num_rows {
+	for i in rounded_matches..num_rows {
     // Set the join column value on the right table
     // to be some value not in the left table join column
     let value: i32 = mvp.next();
 		let right_record: &mut Record = &mut right_table[i];
     right_record.set_column(right_col, value);
+		assert!(right_table.get(i).unwrap().get_column(right_col) == value);
 	}
 
   // Rerandomize right table so join results are not just
   // at the top of the table
-	right_table.shuffle(&mut thread_rng());
+	// right_table.shuffle(&mut thread_rng());
 	
 	right_table
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+
 }

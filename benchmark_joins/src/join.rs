@@ -5,7 +5,7 @@ use strum_macros::EnumIter;
 use crate::record::Record;
 use crate::table::SimpleTable;
 
-#[derive(EnumIter, Serialize, Deserialize, Debug, Clone)]
+#[derive(EnumIter, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum JoinAlgos {
   NLJoin,
   BNLJoin,
