@@ -4,7 +4,7 @@ use std::fmt::Debug;
 use std::panic;
 
 // Maximum fields in a record
-pub const M: usize = 10;
+pub const M: usize = 100;
 
 #[derive(Debug, Clone)]
 pub struct Record {
@@ -95,7 +95,7 @@ impl Record {
 	fn add_column(&mut self, value: i32) -> () {
 		// Check capacity to insert
 		if (self.tail as usize) >= M {
-			panic!("Insufficient capacity for insert");
+			panic!("Insufficient capacity for insert, tail: {:?}, M: {:?}", self.tail, M);
 		} 
 		// Insert column and move to next spot placeholder
 		self.fields[self.tail] = value;
