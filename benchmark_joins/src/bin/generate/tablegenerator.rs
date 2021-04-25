@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::collections::HashSet;
 extern crate joinlib;
 use joinlib::record::Record;
@@ -157,11 +156,4 @@ pub fn generate_right_table(left_table: Vec<Record>,
 	// right_table.shuffle(&mut thread_rng());
 	
 	right_table
-}
-
-#[cfg(test)]
-mod tests {
-	use super::*;
-
-
 }

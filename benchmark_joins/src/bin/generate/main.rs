@@ -87,7 +87,7 @@ fn main() -> () {
 	let left_table = SimpleTable::new(&left_path).copy_to_vec_of_records();
 
 	// ******************** Right Table Params ********************
-	let right_rows = 7000;
+	let right_rows = 10 * 1000;
 	let right_cols = 10;
 
 	// Join Params
