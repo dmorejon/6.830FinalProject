@@ -166,18 +166,13 @@ pub fn run_all_joins(
 	let mut results: Vec<JoinRunResult> = Vec::new();
 	for algo in JoinAlgos::iter() {
 		// Run join as table1 J table2
+		println!("Running join {:?} on {:?} as left and {:?} as right...", algo, table1_name, table2_name);
 		let result: JoinRunResult = run_one_join(
 			table1_name, table2_name, 
 			left_col, right_col, 
 			l_block_sz, r_block_sz, algo.clone());
+		println!("Finished join! Took {:?} millis", result.execution_time_nanos / 1e6 as u128);
 		results.push(result);
-
-		// Run join as table2 J table1
-		let result_reversed: JoinRunResult = run_one_join(
-			table2_name, table1_name, 
-			right_col, left_col, 
-			r_block_sz, l_block_sz, algo.clone());
-		results.push(result_reversed);
 	}
 	results
 }
