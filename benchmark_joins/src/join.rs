@@ -76,7 +76,7 @@ impl<'a> BlockNL<'a> {
     }
   }
 
-  fn get_effective_block_size(&self, num_records: usize, block_size: usize) -> usize {
+  fn get_effective_num_blocks(&self, num_records: usize, block_size: usize) -> usize {
     let intermidate: f64 = ((num_records as f64) / (block_size as f64)).ceil();
     intermidate as usize
   }
@@ -87,17 +87,17 @@ impl<'a> BlockNL<'a> {
     let right_size = self.right.get_num_records();
 
     // Number of effective blocks for left and right tables
-    let effective_l_block_sz = self.get_effective_block_size(left_size, self.l_block_sz);
-    let effective_r_block_sz = self.get_effective_block_size(right_size, self.r_block_sz);
+    let effective_left_num_blocks = self.get_effective_num_blocks(left_size, self.l_block_sz);
+    let effective_right_num_blocks = self.get_effective_num_blocks(right_size, self.r_block_sz);
 
     // Since this is a primary-key foreign-key equijoin
     // we know the the join will be no larger than left table
     let mut join_result = Vec::with_capacity(left_size);
 
-    for _l in 0..effective_l_block_sz  {
+    for _l in 0..effective_left_num_blocks  {
       let left_block = self.left.read_next_block(self.l_block_sz);
 
-      for _r in 0..effective_r_block_sz {
+      for _r in 0..effective_right_num_blocks {
         let right_block = self.right.read_next_block(self.r_block_sz);
 
         for left_record in left_block {
