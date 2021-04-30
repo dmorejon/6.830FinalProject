@@ -102,7 +102,7 @@ pub fn generate_and_write_table(num_rows: usize, num_cols: usize, path: &str) ->
 fn get_table_column_values(table: &Vec<Record>, col: usize) -> HashSet<i32> {
 	let mut cols = HashSet::new();
 	for record in table {
-		let val = record.get_column(col);
+		let val = *record.get_column(col);
 		cols.insert(val);
 	}
 	cols
@@ -135,10 +135,10 @@ pub fn generate_right_table(left_table: Vec<Record>,
   // Fill in enough matching values in the right table join column
   // to achieve the desired level of selectivity
   for i in 0..rounded_matches {
-    let value: i32 = left_table.get(i).unwrap().get_column(left_col);
+    let value: i32 = *left_table.get(i).unwrap().get_column(left_col);
     let right_record: &mut Record = &mut right_table[i];
     right_record.set_column(right_col, value);
-		assert!(right_table.get(i).unwrap().get_column(right_col) == value);
+		assert!(*right_table.get(i).unwrap().get_column(right_col) == value);
   }
 
 	// Now fill in the remaing values from the missing value picker
@@ -148,7 +148,7 @@ pub fn generate_right_table(left_table: Vec<Record>,
     let value: i32 = mvp.next();
 		let right_record: &mut Record = &mut right_table[i];
     right_record.set_column(right_col, value);
-		assert!(right_table.get(i).unwrap().get_column(right_col) == value);
+		assert!(*right_table.get(i).unwrap().get_column(right_col) == value);
 	}
 
   // Rerandomize right table so join results are not just
