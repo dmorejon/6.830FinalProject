@@ -1,8 +1,9 @@
+extern crate joinlib;
 #[cfg(test)]
 mod tests {
-  use crate::join::*;
-  use crate::record::Record;
-  use crate::table::SimpleTable;
+  use joinlib::join::*;
+  use joinlib::record::Record;
+  use joinlib::table::SimpleTable;
   const SMALL1: &str = "tables/small1.csv";
   const SMALL2: &str = "tables/small2.csv";
   const MED1: &str = "tables/med1.csv";
