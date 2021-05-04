@@ -80,6 +80,7 @@ fn main() -> () {
 	};
 
 	// To generate left table, uncomment following
+	
 	// let left_table = generate_table(left_config.left_rows, left_config.left_cols);
 	// write_table(&left_table, &left_config.path);
 
