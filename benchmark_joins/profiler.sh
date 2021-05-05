@@ -4,11 +4,9 @@
 # are in the directory:
 # 	6.830FinalProject/benchmark_joins
 #
-# And you specify the directory of generated data, like:
-#		./profiler.sh tables/10K_left_select10
-
-
-# 1) Parse arguments
+# And you specify the directory of generated data, along with the joins, like:
+#
+#		./profiler.sh tables/10K_left_select10 hash,nl,bnl
 
 # Extract the name of the experiment we want to run
 # Example: tables/10K_left_select10
@@ -17,6 +15,18 @@ if [[ -z $exp_name ]]; then
 	echo "Require experiment name!";
 	exit 1;
 fi
+
+# Extract the oredered list of algos to run
+# Example: hash,nl,bnl
+in_algos=$2
+if [[ -z $in_algos ]]; then
+	echo "Require comma separated algos!";
+	exit 1;
+fi
+algos="$(echo $in_algos | tr -s ',' ' ')"
+
+# Choose block sizes
+block_sizes=( 1 10 50 150 )
 
 # Get left table
 left_table="$(ls $exp_name/*.csv | tail -1)"
@@ -31,10 +41,23 @@ mkdir -p $outdir
 
 # Wipe experiment contents of directory
 rm $outdir/*.json
+echo "[]" > $outdir/$base_exp_name.json
 
 # Create output file
 outfile="$outdir/$base_exp_name.json"
 touch $outfile
 
 # Now profile on tables
-cargo run $left_table $right_tables $outfile
+for algo in ${algos[@]}; do
+	if [[ $algo == "bnl" ]]; then
+		# For block nested loops, run all block size combinations
+		for lbs in ${block_sizes[@]}; do
+			for rbs in ${block_sizes[@]}; do
+				cargo run $left_table $right_tables $outfile $lbs $rbs $algo;
+			done
+		done
+	else
+		# For all non-BNL joins, run with some irrelevant number of blocks
+		cargo run $left_table $right_tables $outfile 1 1 $algo;
+	fi
+done
