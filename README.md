@@ -72,7 +72,9 @@ And that will run the different joins specified, time them, and put the results 
 ]
 ```
 
-Note the Block-Nested-Loops Join will be run with a combination of different block sizes
+Note the Block-Nested-Loops Join will be run with a combination of different block sizes. Further, the profiling script calls `cargo run` under the hood. Specifically, this is also a valid run
+
+```cargo run [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo]```
 
 ## Table Generation Instructions
    To generate a table, go to `src/bin/generate/main.rs` and change the config structs, then run with
