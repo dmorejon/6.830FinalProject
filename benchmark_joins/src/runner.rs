@@ -31,6 +31,7 @@ pub struct JoinRunResult {
 	outer_table: Table,
 	inner_table: Table,
 	num_emitted_records: usize,
+	pub trial_number: i8
 }
 
 fn flush_caches() -> () {
@@ -64,6 +65,7 @@ fn run_bnl_join(bnlj: &mut BlockNL, left_col: usize, right_col: usize, t1: Table
 		outer_table: t1,
 		inner_table: t2,
 		num_emitted_records: results.len(),
+		trial_number: -1,
 	}
 }
 
@@ -85,6 +87,7 @@ fn run_nl_join(nlj: &mut NestedLoopsJoin, left_col: usize, right_col: usize, t1:
 		outer_table: t1,
 		inner_table: t2,
 		num_emitted_records: results.len(),
+		trial_number: -1,
 	}
 }
 
@@ -106,6 +109,7 @@ fn run_simplehash_join(shj: &mut SimpleHashJoin, left_col: usize, right_col: usi
 		outer_table: t1,
 		inner_table: t2,
 		num_emitted_records: results.len(),
+		trial_number: -1,
 	}
 }
 
