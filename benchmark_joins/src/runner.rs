@@ -109,14 +109,14 @@ fn run_simplehash_join(shj: &mut SimpleHashJoin, left_col: usize, right_col: usi
 	}
 }
 
-fn run_one_join(
+pub fn run_one_join(
 	table1_name: &str, 
 	table2_name: &str,
 	left_col: usize,
 	right_col: usize,
 	l_block_sz: usize, 
 	r_block_sz: usize,
-	algo: JoinAlgos) -> JoinRunResult {
+	algo: &JoinAlgos) -> JoinRunResult {
 	// Create tables
 	let table1: &mut SimpleTable = &mut SimpleTable::new(table1_name);
 	let t1: Table = Table {
@@ -170,7 +170,7 @@ pub fn run_all_joins(
 		let result: JoinRunResult = run_one_join(
 			table1_name, table2_name, 
 			left_col, right_col, 
-			l_block_sz, r_block_sz, algo.clone());
+			l_block_sz, r_block_sz, &algo);
 		println!("Finished join! Took {:?} millis", result.execution_time_nanos / 1e6 as u128);
 		results.push(result);
 	}

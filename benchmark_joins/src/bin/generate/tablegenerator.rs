@@ -153,7 +153,7 @@ pub fn generate_right_table(left_table: Vec<Record>,
 
   // Rerandomize right table so join results are not just
   // at the top of the table
-	// right_table.shuffle(&mut thread_rng());
+	right_table.shuffle(&mut thread_rng());
 	
 	right_table
 }

@@ -1,25 +1,21 @@
-use joinlib::runner::run_all_joins;
+use joinlib::runner::run_one_join;
 use joinlib::runner::JoinRunResult;
+use joinlib::join::JoinAlgos;
 use std::path::Path;
-use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::BufReader;
 use std::env;
 use std::process;
 
 fn main() {
-	// Expect two table(s) and an output file
 	let args: Vec<String> = env::args().collect();
-	if args.len() != 4 {
-		println!("{:?}", args);
-		println!("Expected two tables [left_table] [right_tables] [json_outfile]");
+	if args.len() != 6+1 {
+		println!("Expected [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo]");
 		process::exit(1);
 	}
 
-	// Parse left table and out file
+	// Parse left table
 	let left_table_name: &str = args.get(1).unwrap();
-	let outfile: File = match File::create(&Path::new(args.get(3).unwrap())) {
-		Err(e) => panic!("Could not read output file {:?}", e),
-		Ok(f) => f
-	};
 
 	// Parse right tables, separated by ;
 	let mut right_table_names: Vec<String> = Vec::new();
@@ -27,23 +23,64 @@ fn main() {
 	for rtn in raw_right_table_names.split(";") {
 		right_table_names.push(rtn.to_owned());
 	}
-	println!("Right tables: {:?}", right_table_names);
+
+	// Parse left_block_size, right_block_size, and join_algo
+	let left_block_size: usize = args.get(4).unwrap().parse().unwrap();
+	let right_block_size: usize = args.get(5).unwrap().parse().unwrap();
+	let raw_join_algo: &str = args.get(6).unwrap();
+
+	// Match raw join algo to actual join algo
+	let join_algo = match raw_join_algo {
+		"nl" => JoinAlgos::NLJoin,
+		"bnl" => JoinAlgos::BNLJoin,
+		"hash" => JoinAlgos::SimpleHashJoin,
+		_ => panic!("Unrecognized join algo {:?}", raw_join_algo),
+	};
+
+	// Fetch array of results from outfile
+	let outpath = Path::new(args.get(3).unwrap());
+	let mut results: Vec<JoinRunResult>;
+	{
+		let outfile = match OpenOptions::new()
+			.create(true)
+			.read(true)
+			.write(true)
+			.open(outpath) {
+			Err(e) => panic!("Could not open {:?} {:?}", outpath, e),
+			Ok(f) => f
+		};
+		results = match serde_json::from_reader(BufReader::new(&outfile)) {
+			Err(e) => panic!("Could not read JSON {:?} {:?}", &outfile, e),
+			Ok(r) => r
+		};
+	}
 
 	// Profile our joins on the input tables
-	let mut results: Vec<Vec<JoinRunResult>> = Vec::new();
+	// let mut results: Vec<JoinRunResult> = Vec::new();
 	for rtn in right_table_names {
-		results.push(run_all_joins(
+		results.push(run_one_join(
 			left_table_name, 
 			&rtn, 
 			5, 
 			5, 
-			2, 
-			2));
+			left_block_size, 
+			right_block_size,
+			&join_algo
+		));
 	}
 
-	// Write experiment run data to output file
-	match serde_json::to_writer(outfile, &results) {
-		Err(e) => panic!("Could not write to output file {:?}", e),
-		Ok(_) => process::exit(0)
+	// Reopen outfile in write mode
+	{
+		let outfile = OpenOptions::new()
+			.write(true)
+			.open(outpath)
+			.unwrap();
+	
+		// Write experiment run data to output file
+		match serde_json::to_writer_pretty(outfile, &results) {
+			Err(e) => panic!("Could not write to output file {:?}", e),
+			Ok(_) => process::exit(0)
+		};
 	}
+
 }
