@@ -8,7 +8,6 @@ use std::env;
 use std::process;
 
 fn main() {
-	// Expect two table(s) and an output file
 	let args: Vec<String> = env::args().collect();
 	if args.len() != 6+1 {
 		println!("Expected [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo]");
