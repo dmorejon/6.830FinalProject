@@ -6,7 +6,7 @@
 #
 # And you specify the directory of generated data, along with the joins, like:
 #
-#		./profiler.sh tables/10K_left_select10 hash,nl,bnl
+#		./profiler.sh tables/10K_left_select10 hash,bnl,nl 3
 
 # Extract the name of the experiment we want to run
 # Example: tables/10K_left_select10
@@ -17,7 +17,7 @@ if [[ -z $exp_name ]]; then
 fi
 
 # Extract the ordered list of algos to run
-# Example: hash,nl,bnl
+# Example: hash,bnl,nl
 in_algos=$2
 if [[ -z $in_algos ]]; then
 	echo "Require comma separated algos!"
