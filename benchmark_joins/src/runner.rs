@@ -8,6 +8,7 @@ use crate::join::BlockNL;
 use crate::join::NestedLoopsJoin;
 use crate::join::SimpleHashJoin;
 use crate::join::JoinAlgos;
+use crate::parjoin::*;
 use crate::table::SimpleTable;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -91,6 +92,28 @@ fn run_nl_join(nlj: &mut NestedLoopsJoin, left_col: usize, right_col: usize, t1:
 	}
 }
 
+fn run_pnl_join(pnlj: &mut ParallelNestedLoopsJoin, left_col: usize, right_col: usize, t1: Table, t2: Table) -> JoinRunResult {
+	// Run the join
+	flush_caches();
+	let start: Instant = Instant::now();
+	let results: Vec<Record> = pnlj.equi_join(left_col, right_col);
+	let end: Instant = Instant::now();
+
+	// Output result
+	JoinRunResult {
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::PNLJoin,
+			left_block_size: 0,
+			right_block_size: 0,
+		},
+		execution_time_nanos: end.duration_since(start).as_nanos(),
+		outer_table: t1,
+		inner_table: t2,
+		num_emitted_records: results.len(),
+		trial_number: -1,
+	}
+}
+
 fn run_simplehash_join(shj: &mut SimpleHashJoin, left_col: usize, right_col: usize, t1: Table, t2: Table) -> JoinRunResult {
 	// Run the join
 	flush_caches();
@@ -102,6 +125,28 @@ fn run_simplehash_join(shj: &mut SimpleHashJoin, left_col: usize, right_col: usi
 	JoinRunResult {
 		join_type: JoinAlgoDetails {
 			join_name: JoinAlgos::SimpleHashJoin,
+			left_block_size: 0,
+			right_block_size: 0,
+		},
+		execution_time_nanos: end.duration_since(start).as_nanos(),
+		outer_table: t1,
+		inner_table: t2,
+		num_emitted_records: results.len(),
+		trial_number: -1,
+	}
+}
+
+fn run_psh_join(pshj: &mut ParallelSimpleHashJoin, left_col: usize, right_col: usize, t1: Table, t2: Table) -> JoinRunResult {
+	// Run the join
+	flush_caches();
+	let start: Instant = Instant::now();
+	let results: Vec<Record> = pshj.equi_join(left_col, right_col);
+	let end: Instant = Instant::now();
+
+	// Output result
+	JoinRunResult {
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::ParallelSimpleHashJoin,
 			left_block_size: 0,
 			right_block_size: 0,
 		},
@@ -155,6 +200,20 @@ pub fn run_one_join(
 				left_col, 
 				right_col,
 				t1, t2),
+		JoinAlgos::PNLJoin => {
+			run_pnl_join(
+				&mut ParallelNestedLoopsJoin::new(table1, table2), 
+				left_col, 
+				right_col,
+				t1, t2)
+			},
+		JoinAlgos::ParallelSimpleHashJoin => {
+			run_psh_join(
+				&mut ParallelSimpleHashJoin::new(table1, table2), 
+				left_col, 
+				right_col,
+				t1, t2)
+		}
 	}
 }
 

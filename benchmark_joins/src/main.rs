@@ -8,6 +8,7 @@ use std::env;
 use std::process;
 
 fn main() {
+
 	let args: Vec<String> = env::args().collect();
 	if args.len() != 7+1 {
 		println!("Expected [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo] [num_trials]");
@@ -35,6 +36,8 @@ fn main() {
 		"nl" => JoinAlgos::NLJoin,
 		"bnl" => JoinAlgos::BNLJoin,
 		"hash" => JoinAlgos::SimpleHashJoin,
+		"pnl" => JoinAlgos::PNLJoin,
+		"psh" => JoinAlgos::ParallelSimpleHashJoin,
 		_ => panic!("Unrecognized join algo {:?}", raw_join_algo),
 	};
 
