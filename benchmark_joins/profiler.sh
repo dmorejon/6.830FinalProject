@@ -64,11 +64,11 @@ for algo in ${algos[@]}; do
 		# For block nested loops, run all block size combinations
 		for lbs in ${block_sizes[@]}; do
 			for rbs in ${block_sizes[@]}; do
-				cargo run $left_table $right_tables $outfile $lbs $rbs $algo $num_trials
+				cargo run --release $left_table $right_tables $outfile $lbs $rbs $algo $num_trials
 			done
 		done
 	else
 		# For all non-BNL joins, run with some irrelevant number of blocks
-		cargo run $left_table $right_tables $outfile 1 1 $algo $num_trials
+		cargo run --release $left_table $right_tables $outfile 1 1 $algo $num_trials
 	fi
 done

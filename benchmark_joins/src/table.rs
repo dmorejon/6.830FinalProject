@@ -1,5 +1,7 @@
-use std::clone::Clone;
+use std::{clone::Clone, slice::Iter};
 use std::cmp::min;
+use rayon::iter::IntoParallelRefIterator;
+
 use crate::record::Record;
 use crate::readtable::fetch_records;
 
@@ -51,6 +53,14 @@ impl SimpleTable {
 
   pub fn get_num_columns_per_record(&self) -> usize {
     self.num_columns
+  }
+
+  pub fn record_iterator(&self) -> Iter<Record> {
+    self.records.iter()
+  }
+
+  pub fn record_par_iterator(&self) -> rayon::slice::Iter<Record> {
+    self.records.par_iter()
   }
 
   pub fn record_view(&self) -> &[Record] {
