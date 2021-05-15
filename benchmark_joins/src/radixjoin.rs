@@ -10,11 +10,11 @@ pub struct RadixJoin<'a> {
 
 
   // Leftmost 4 bits
-  fn h1_1(x: i32) -> i32 {x & 0b1111}
+  fn h1_1(x: i32) -> i32 {x & 0b11111}
   // Rightmost 4 bits
 
   fn h1_2(x: i32) -> i32 {
-    x.abs() >> 27
+    x.abs() >> 26
   }
 
 fn partition(table: &mut SimpleTable, 
@@ -58,11 +58,29 @@ fn partition(table: &mut SimpleTable,
       let part = h1_2(val) as usize;
       second_partitions[part].push(record.clone());
     }
-
     result.push(second_partitions);
-
   }
 
+  // *****************************
+  // let mut min = usize::MAX;
+  // let mut max = usize::MIN;
+  // let mut avg = 0;
+  // let mut num = 0;
+  // for first in &result {
+  //   for second in first {
+  //     if second.len() < min {
+  //       min = second.len();
+  //     }
+  //     if second.len() > max {
+  //       max = second.len();
+  //     }
+  //     avg += second.len();
+  //   }
+  //   num += first.len();
+  // }
+  // avg = avg / num;
+  // println!("min: {:?}, max: {:?}, avg: {:?}", min, max, avg);
+// *****************************
   result
 }
 
@@ -79,8 +97,8 @@ impl<'a> RadixJoin<'a> {
   pub fn equi_join(&mut self, left_col: usize, right_col: usize) -> Vec<Record> {
     // TODO: potentially use a tuneable variable like these 
     //  and define h1_1, h1_2 based on that
-    let first_bits = 4;
-    let second_bits = 4;
+    let first_bits = 5;
+    let second_bits = 5;
 
     let base: i32 = 2;
     let num_first_partition= base.pow(first_bits);
