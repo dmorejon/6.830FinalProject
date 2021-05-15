@@ -3,29 +3,36 @@ extern crate joinlib;
 use joinlib::record::Record;
 
 use csv::Writer;
-use rand::Rng;
+use rand::{Rng, prelude::ThreadRng};
 use rand::{seq::SliceRandom, thread_rng};
 
 struct MissingValuePicker {
 	values: HashSet<i32>,
-	v: i32,
+	rng: ThreadRng,
 }
 
 impl MissingValuePicker {
 	fn new(values: HashSet<i32>) -> MissingValuePicker {
 		MissingValuePicker {
 			values,
-			v: i32::MIN,
+			rng: rand::thread_rng(),
 		}
 	}
 
 	fn next(&mut self) -> i32 {
-		while self.values.contains(&(self.v.clone())) {
-			// Increment current value v until 
-			// it is not found in the values
-			self.v += 1;
+		// Keep generating random numbers uniformly until we've
+		// not seen the new generated value before
+		let mut v = self.rng.gen_range(i32::MIN+1..=i32::MAX);
+		while self.values.contains(&v) {
+			v = self.rng.gen_range(i32::MIN+1..=i32::MAX);
 		}
-		self.v
+
+		// Assert that we've indeed added this value to the values
+		// we've seen so far. This way, subsequent calls to next()
+		// will ensure to never generate this value again
+		assert!(self.values.insert(v));
+		
+		v
 	}
 }
 
@@ -37,7 +44,8 @@ pub fn generate_table(num_rows: usize, num_cols: usize) -> Vec<Record> {
 	for _row in 0..num_rows {
 		let mut fields: Vec<i32> = vec![0; num_cols];
 		for col in 0..num_cols {
-			let field = rng.gen::<i32>();
+			// In order to do .abs() we cannot have i32::MIN in the table
+			let field = rng.gen_range(i32::MIN+1..=i32::MAX);
 			fields[col] = field;
 		}
 		let record = Record::new(fields.as_slice());

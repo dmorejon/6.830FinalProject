@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use std::panic;
 
 // Maximum fields in a record
-pub const M: usize = 100;
+pub const M: usize = 20;
 
 #[derive(Debug, Clone)]
 pub struct Record {

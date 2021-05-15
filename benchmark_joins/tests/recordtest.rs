@@ -83,16 +83,16 @@ mod tests {
 		check_record(&r, &columns);
 	}
 
-	#[test]
-	fn test_large_record() {
-		// Thiqq
-		let mut columns: [i32; 75] = [0; 75];
-		for v in 1000..1075 {
-			columns[v - 1000] = v as i32;
-		}
-		let r = Record::new(&columns);
-		check_record(&r, &columns);
-	}
+	// #[test]
+	// fn test_large_record() {
+	// 	// Thiqq
+	// 	let mut columns: [i32; 75] = [0; 75];
+	// 	for v in 1000..1075 {
+	// 		columns[v - 1000] = v as i32;
+	// 	}
+	// 	let r = Record::new(&columns);
+	// 	check_record(&r, &columns);
+	// }
 
 	#[test]
 	fn test_max_record() {

@@ -10,6 +10,7 @@ pub enum JoinAlgos {
   NLJoin,
   BNLJoin,
   SimpleHashJoin,
+  RadixJoin,
   PNLJoin,
   ParallelSimpleHashJoin,
 }
