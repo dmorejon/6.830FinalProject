@@ -13,6 +13,7 @@ pub enum JoinAlgos {
   RadixJoin,
   PNLJoin,
   ParallelSimpleHashJoin,
+  ParallelUnaryLeapFrogJoin,
 }
 
 

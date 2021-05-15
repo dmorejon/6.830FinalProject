@@ -59,6 +59,13 @@ mod tests {
     pnl.equi_join(col1, col2)
   }
 
+  fn pulf_result(file1: &str, file2: &str, col1: usize, col2: usize) -> Vec<Record> {
+    let table1 = &mut SimpleTable::new(file1);
+    let table2 = &mut SimpleTable::new(file2);
+    let mut pulf = ParallelUnaryLeapFrogJoin::new(table1, table2);
+    pulf.equi_join(col1, col2)
+  }
+
   fn compare_results(actual: &mut Vec<Record>, expected: &mut Vec<Record>) {
     assert_eq!(actual.len(), expected.len());
     actual.sort();
@@ -164,20 +171,20 @@ mod tests {
   }
 
   #[test]
-  fn test_pnl_small1_small2() { 
-    let col1 = 2;
-    let col2 = 0;
-    let expected = nl_result(SMALL1, SMALL2, col1, col2);
-    let mut actual = pnl_result(SMALL1, SMALL2, col1, col2);
-    compare_results(&mut actual, &mut expected.clone());
-  }
-
-  #[test]
   fn test_radix_med1_med2() { 
     let col1 = 2;
     let col2 = 0;
     let expected = nl_result(MED1, MED2, col1, col2);
     let mut actual = radix_result(MED1, MED2, col1, col2);
+    compare_results(&mut actual, &mut expected.clone());
+  }
+
+  #[test]
+  fn test_pnl_small1_small2() { 
+    let col1 = 2;
+    let col2 = 0;
+    let expected = nl_result(SMALL1, SMALL2, col1, col2);
+    let mut actual = pnl_result(SMALL1, SMALL2, col1, col2);
     compare_results(&mut actual, &mut expected.clone());
   }
 
@@ -205,6 +212,24 @@ mod tests {
     let col2 = 0;
     let expected = nl_result(MED1, MED2, col1, col2);
     let mut actual = psh_result(MED1, MED2, col1, col2);
+    compare_results(&mut actual, &mut expected.clone());
+  }
+
+  #[test]
+  fn test_pulf_small1_small2() { 
+    let col1 = 2;
+    let col2 = 0;
+    let expected = nl_result(SMALL1, SMALL2, col1, col2);
+    let mut actual = pulf_result(SMALL1, SMALL2, col1, col2);
+    compare_results(&mut actual, &mut expected.clone());
+  }
+
+  #[test]
+  fn test_pulf_med1_med2() { 
+    let col1 = 2;
+    let col2 = 0;
+    let expected = nl_result(MED1, MED2, col1, col2);
+    let mut actual = pulf_result(MED1, MED2, col1, col2);
     compare_results(&mut actual, &mut expected.clone());
   }
 }

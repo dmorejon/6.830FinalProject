@@ -39,6 +39,7 @@ fn main() {
 		"radix" => JoinAlgos::RadixJoin,
 		"pnl" => JoinAlgos::PNLJoin,
 		"psh" => JoinAlgos::ParallelSimpleHashJoin,
+		"pulf" => JoinAlgos::ParallelUnaryLeapFrogJoin,
 		_ => panic!("Unrecognized join algo {:?}", raw_join_algo),
 	};
 
