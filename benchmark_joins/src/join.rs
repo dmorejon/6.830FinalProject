@@ -10,6 +10,8 @@ pub enum JoinAlgos {
   NLJoin,
   BNLJoin,
   SimpleHashJoin,
+  PNLJoin,
+  ParallelSimpleHashJoin,
 }
 
 
@@ -17,7 +19,6 @@ pub struct NestedLoopsJoin<'a> {
   left: &'a mut SimpleTable,
   right: &'a mut SimpleTable,
 }
-
 
 impl<'a> NestedLoopsJoin<'a> {
   
