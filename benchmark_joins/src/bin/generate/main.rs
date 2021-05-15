@@ -61,12 +61,13 @@ fn main() -> () {
 	// DON'T FORGET TO CHANGE THE TABLE NAMES WHEN YOU CHANGE PARAMS
 
 	// General Params
-	let join_name = "10K_left_select10";
+	let join_name = "10K_left_select20";
 	let join_dir = format!("tables/{}/", join_name);
 
 	// ******************** Left Table Params *******************
 	let left_rows = 10*1000;
 	let left_cols = 10;
+	println!("left_rows: {:?}", left_rows);
 
 	let left_table_name = format!("{}R_{}C.csv", format_row_count(left_rows), left_cols);
 	let left_path = join_dir.to_owned() + &left_table_name;
@@ -88,39 +89,41 @@ fn main() -> () {
 	let left_table = SimpleTable::new(&left_path).copy_to_vec_of_records();
 
 	// ******************** Right Table Params ********************
-	let right_rows = 10 * 1000;
-	let right_cols = 10;
+	for i in [2, 4, 6, 8, 10].iter() {
 
-	// Join Params
-	let left_col = 5;
-	let right_col = 5;
-	let join_selectivity_perc = 10;
+		let right_rows = i * 1000;
+		let right_cols = 10;
+		println!("right_rows: {:?}", right_rows);
 
-	let right_table_name = format!("{}R_{}C_select{}_left{}_right{}.csv", 
-			format_row_count(right_rows), 
-			format_row_count(right_cols), 
-			join_selectivity_perc,
-			left_col, right_col);
+		// Join Params
+		let left_col = 5;
+		let right_col = 5;
+		let join_selectivity_perc = 20;
 
-	// Ensure sizes + selectivity play friendly w/ each other
-	assert!(right_rows >= ((join_selectivity_perc * left_rows) / 100));
+		let right_table_name = format!("{}R_{}C_select{}_left{}_right{}.csv", 
+				format_row_count(right_rows), 
+				format_row_count(right_cols), 
+				join_selectivity_perc,
+				left_col, right_col);
+
+		// Ensure sizes + selectivity play friendly w/ each other
+		assert!(right_rows >= ((join_selectivity_perc * left_rows) / 100));
+		
+		let right_path = join_dir.to_owned() + "rights/" + &right_table_name;
 	
-	let right_path = join_dir.to_owned() + "rights/" + &right_table_name;
-	
-	// **********************************************************
+		// **********************************************************
 
-	let rc = RightTableGenConfig {
-		left_table,
-		right_rows: right_rows,
-		right_cols: right_cols,
-		left_col: left_col,
-		right_col: right_col,
-		join_selectivity: (join_selectivity_perc as f64) / 100.0,  
-		path: right_path,
-	};
+		let rc = RightTableGenConfig {
+			left_table: left_table.clone(),
+			right_rows: right_rows,
+			right_cols: right_cols,
+			left_col: left_col,
+			right_col: right_col,
+			join_selectivity: (join_selectivity_perc as f64) / 100.0,  
+			path: right_path,
+		};
 
-	let right_table = generate_right_table(rc.left_table, rc.right_rows, rc.right_cols, rc.join_selectivity, rc.left_col, rc.right_col);
-	write_table(&right_table, &rc.path);
-
-	println!("I am rusty");
+		let right_table = generate_right_table(rc.left_table, rc.right_rows, rc.right_cols, rc.join_selectivity, rc.left_col, rc.right_col);
+		write_table(&right_table, &rc.path);
+	}
 }

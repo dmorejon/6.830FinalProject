@@ -15,7 +15,7 @@ impl MissingValuePicker {
 	fn new(values: HashSet<i32>) -> MissingValuePicker {
 		MissingValuePicker {
 			values,
-			v: i32::MIN,
+			v: i32::MIN+1,
 		}
 	}
 
@@ -37,7 +37,8 @@ pub fn generate_table(num_rows: usize, num_cols: usize) -> Vec<Record> {
 	for _row in 0..num_rows {
 		let mut fields: Vec<i32> = vec![0; num_cols];
 		for col in 0..num_cols {
-			let field = rng.gen::<i32>();
+			// In order to do .abs() we cannot have i32::MIN in the table
+			let field = rng.gen_range(i32::MIN+1..=i32::MAX);
 			fields[col] = field;
 		}
 		let record = Record::new(fields.as_slice());

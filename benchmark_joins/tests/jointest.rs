@@ -2,6 +2,7 @@ extern crate joinlib;
 #[cfg(test)]
 mod tests {
   use joinlib::join::*;
+  use joinlib::radixjoin::*;
   use joinlib::record::Record;
   use joinlib::table::SimpleTable;
   const SMALL1: &str = "tables/small1.csv";
@@ -33,6 +34,13 @@ mod tests {
     let table2 = &mut SimpleTable::new(file2);
     let mut simplehash = SimpleHashJoin::new(table1, table2);
     simplehash.equi_join(col1, col2)
+  }
+
+  fn radix_result(file1: &str, file2: &str, col1: usize, col2: usize) -> Vec<Record> {
+    let table1 = &mut SimpleTable::new(file1);
+    let table2 = &mut SimpleTable::new(file2);
+    let mut radix = RadixJoin::new(table1, table2);
+    radix.equi_join(col1, col2)
   }
 
   fn compare_results(actual: &mut Vec<Record>, expected: &mut Vec<Record>) {
@@ -130,4 +138,21 @@ mod tests {
     compare_results(&mut actual, &mut expected.clone());
   }
 
+  #[test]
+  fn test_radix_small1_small2() { 
+    let col1 = 2;
+    let col2 = 0;
+    let expected = nl_result(SMALL1, SMALL2, col1, col2);
+    let mut actual = radix_result(SMALL1, SMALL2, col1, col2);
+    compare_results(&mut actual, &mut expected.clone());
+  }
+
+  #[test]
+  fn test_radix_med1_med2() { 
+    let col1 = 2;
+    let col2 = 0;
+    let expected = nl_result(MED1, MED2, col1, col2);
+    let mut actual = radix_result(MED1, MED2, col1, col2);
+    compare_results(&mut actual, &mut expected.clone());
+  }
 }

@@ -8,6 +8,8 @@ use crate::join::BlockNL;
 use crate::join::NestedLoopsJoin;
 use crate::join::SimpleHashJoin;
 use crate::join::JoinAlgos;
+
+use crate::radixjoin::RadixJoin;
 use crate::table::SimpleTable;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -113,6 +115,28 @@ fn run_simplehash_join(shj: &mut SimpleHashJoin, left_col: usize, right_col: usi
 	}
 }
 
+fn run_radix_join(rj: &mut RadixJoin, left_col: usize, right_col: usize, t1: Table, t2: Table) -> JoinRunResult {
+	// Run the join
+	flush_caches();
+	let start: Instant = Instant::now();
+	let results: Vec<Record> = rj.equi_join(left_col, right_col);
+	let end: Instant = Instant::now();
+
+	// Output result
+	JoinRunResult {
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::RadixJoin,
+			left_block_size: 0,
+			right_block_size: 0,
+		},
+		execution_time_nanos: end.duration_since(start).as_nanos(),
+		outer_table: t1,
+		inner_table: t2,
+		num_emitted_records: results.len(),
+		trial_number: -1,
+	}
+}
+
 pub fn run_one_join(
 	table1_name: &str, 
 	table2_name: &str,
@@ -152,6 +176,12 @@ pub fn run_one_join(
 		JoinAlgos::SimpleHashJoin =>
 			run_simplehash_join(
 				&mut SimpleHashJoin::new(table1, table2), 
+				left_col, 
+				right_col,
+				t1, t2),
+		JoinAlgos::RadixJoin =>
+			run_radix_join(
+				&mut RadixJoin::new(table1, table2), 
 				left_col, 
 				right_col,
 				t1, t2),
