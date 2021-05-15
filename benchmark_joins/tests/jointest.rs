@@ -162,7 +162,8 @@ mod tests {
     let mut actual = radix_result(SMALL1, SMALL2, col1, col2);
     compare_results(&mut actual, &mut expected.clone());
   }
-  
+
+  #[test]
   fn test_pnl_small1_small2() { 
     let col1 = 2;
     let col2 = 0;
@@ -180,6 +181,7 @@ mod tests {
     compare_results(&mut actual, &mut expected.clone());
   }
 
+  #[test]
   fn test_pnl_med1_med2() { 
     let col1 = 2;
     let col2 = 0;
