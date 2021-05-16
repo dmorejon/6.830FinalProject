@@ -24,6 +24,7 @@ impl MissingValuePicker {
 		// not seen the new generated value before
 		let mut v = self.rng.gen_range(i32::MIN+1..=i32::MAX);
 		while self.values.contains(&v) {
+			println!("MVP collision!");
 			v = self.rng.gen_range(i32::MIN+1..=i32::MAX);
 		}
 

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
+use rayon::iter::{IntoParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
 
-use crate::record::Record;
+use crate::{join, record::Record};
 use crate::table::SimpleTable;
 
 pub struct RadixJoin<'a> {
@@ -125,7 +125,8 @@ impl<'a> RadixJoin<'a> {
 		let mut join_result = Vec::with_capacity(left_size);
 
 		for first in 0..left_partitions.len() {
-			for second in 0..left_partitions[first].len() {
+			let join_first_result: Vec<Record> = (0..left_partitions[first].len()).into_par_iter()
+			.map(|second| -> Vec<Record> {
 				// Build hash table on right partition corresponding to [first][second]
 				let right_partition = &right_partitions[first][second];
 				let mut right_table = HashMap::<i32, Vec<&Record>>::new();
@@ -135,6 +136,7 @@ impl<'a> RadixJoin<'a> {
 					right_table.entry(right_column_value).or_insert(Vec::new()).push(record);
 				}
 				// Probe built hash table
+				let mut intermediate_results = Vec::new();
 				for left_record in &left_partitions[first][second] {
 					let left_column_value = left_record.get_column(left_col);
 					match right_table.get(left_column_value) {
@@ -148,12 +150,17 @@ impl<'a> RadixJoin<'a> {
 						Some(right_record_matches) => {
 							for right_record in right_record_matches {
 								let join_record: Record = Record::merge(left_record, right_record);
-								join_result.push(join_record);
+								intermediate_results.push(join_record);
 							}
 						}
 					};
 				}
-			}
+				intermediate_results
+			})
+			.flatten()
+			.collect();
+
+			join_result.extend(join_first_result);
 		}
 		join_result
 	}
