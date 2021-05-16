@@ -4,6 +4,7 @@ use crate::record::Record;
 use itertools::Itertools;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
 
+const CHUNK_SIZE: usize = 4_300;
 
 pub struct ParallelNestedLoopsJoin<'a> {
 	left: &'a mut SimpleTable,
@@ -24,21 +25,22 @@ impl<'a> ParallelNestedLoopsJoin<'a> {
 		let left_size = self.left.get_num_records();
 
 		self.left.record_par_iterator()
-		.map(|left_record| {
+		.chunks(CHUNK_SIZE)
+		.map(|left_records| {
 			let mut intermediate_join_result = Vec::with_capacity(left_size);
-			for right_record in self.right.record_iterator() {
-				if left_record.get_column(left_col) == right_record.get_column(right_col) {
-					// Join condition is met ==> new record 
-					let join_record = Record::merge(left_record, right_record);
-					intermediate_join_result.push(join_record);
+			for lr in left_records {
+				for rr in self.right.record_iterator() {
+					if lr.get_column(left_col) == rr.get_column(right_col) {
+						// Join condition is met ==> new record 
+						let join_record = Record::merge(lr, rr);
+						intermediate_join_result.push(join_record);
+					}
 				}
 			}
 			intermediate_join_result
 		})
-		.reduce(|| Vec::new(), |a, b| {
-			let v = vec![a, b];
-			itertools::concat(v)
-		})
+		.flatten()
+		.collect()
 	}
 }
 
@@ -78,7 +80,7 @@ impl<'a> ParallelSimpleHashJoin<'a> {
 		}
 
 		self.left.record_par_iterator()
-			.chunks(200_000)
+			.chunks(CHUNK_SIZE)
 			// Map each left record chunk to group of joined records [R_1, ..., R_k]
 			.map(|left_records| -> Vec<Record> {
 				left_records.iter()
