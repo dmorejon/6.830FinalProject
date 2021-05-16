@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use rayon::iter::{IntoParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
 
-use crate::{join, record::Record};
+use crate::{record::Record};
 use crate::table::SimpleTable;
 
 pub struct RadixJoin<'a> {
@@ -10,14 +10,15 @@ pub struct RadixJoin<'a> {
 	right: &'a mut SimpleTable,
 }
 
+// Leftmost bits
+fn h1_1(x: i32) -> i32 {
+	x & 0b11_111
+}
 
-	// Leftmost 4 bits
-	fn h1_1(x: i32) -> i32 {x & 0b11111}
-	// Rightmost 4 bits
-
-	fn h1_2(x: i32) -> i32 {
-		x.abs() >> 26
-	}
+// Next leftmost bits
+fn h1_2(x: i32) -> i32 {
+	(x & 0b1_111_100_000) >> 5
+}
 
 fn partition(table: &mut SimpleTable, 
 									 col: usize, 
@@ -63,26 +64,6 @@ fn partition(table: &mut SimpleTable,
 		result.push(second_partitions);
 	}
 
-	// *****************************
-	// let mut min = usize::MAX;
-	// let mut max = usize::MIN;
-	// let mut avg = 0;
-	// let mut num = 0;
-	// for first in &result {
-	//   for second in first {
-	//     if second.len() < min {
-	//       min = second.len();
-	//     }
-	//     if second.len() > max {
-	//       max = second.len();
-	//     }
-	//     avg += second.len();
-	//   }
-	//   num += first.len();
-	// }
-	// avg = avg / num;
-	// println!("min: {:?}, max: {:?}, avg: {:?}", min, max, avg);
-// *****************************
 	result
 }
 
@@ -120,48 +101,34 @@ impl<'a> RadixJoin<'a> {
 
 		let left_partitions = &partitions[0];
 		let right_partitions = &partitions[1];
-
-		let left_size = self.left.get_num_records();
-		let mut join_result = Vec::with_capacity(left_size);
-
-		for first in 0..left_partitions.len() {
-			let join_first_result: Vec<Record> = (0..left_partitions[first].len()).into_par_iter()
+		
+		(0..left_partitions.len()).into_par_iter()
+		.map(|first| -> Vec<Record> {
+			(0..left_partitions[first].len()).into_par_iter()
 			.map(|second| -> Vec<Record> {
 				// Build hash table on right partition corresponding to [first][second]
 				let right_partition = &right_partitions[first][second];
 				let mut right_table = HashMap::<i32, Vec<&Record>>::new();
 				for record in right_partition {
 					let right_column_value = *record.get_column(right_col);
-					// TODO should keys be a Record or &Record
 					right_table.entry(right_column_value).or_insert(Vec::new()).push(record);
 				}
 				// Probe built hash table
-				let mut intermediate_results = Vec::new();
-				for left_record in &left_partitions[first][second] {
-					let left_column_value = left_record.get_column(left_col);
-					match right_table.get(left_column_value) {
-						// If hash table doesn't have this value, 
-						// we know for sure that this record does not 
-						// participate in the join
-						None => continue,
-		
-						// But if there are some matches for the value,
-						// then we know they ALL participate in the join
-						Some(right_record_matches) => {
-							for right_record in right_record_matches {
-								let join_record: Record = Record::merge(left_record, right_record);
-								intermediate_results.push(join_record);
-							}
-						}
-					};
-				}
-				intermediate_results
+				left_partitions[first][second].iter()
+				.map(|lr| -> Vec<Record> {
+					right_table
+							.get(lr.get_column(left_col)).unwrap_or(&Vec::new())
+							.iter()
+							.map(|rr| Record::merge(&lr, rr))
+							.collect()
+				})
+				.flatten()
+				.collect()
 			})
 			.flatten()
-			.collect();
-
-			join_result.extend(join_first_result);
-		}
-		join_result
-	}
+			.collect()
+		})
+		.flatten()
+		.collect()
+	}	
 }

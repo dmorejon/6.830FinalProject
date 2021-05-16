@@ -63,8 +63,8 @@ fn main() -> () {
 	let right_tables_dir = format!("tables/{}/rights", join_name);
 
 	// Create dirs
-	fs::create_dir_all(&tables_dir);
-	fs::create_dir_all(&right_tables_dir);
+	let _ = fs::create_dir_all(&tables_dir).unwrap();
+	let _ = fs::create_dir_all(&right_tables_dir).unwrap();
 	
 	// Scaling factor
 	// 1k for 10k left table

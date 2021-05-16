@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 use crate::table::SimpleTable;
 use crate::record::Record;
 use itertools::Itertools;
@@ -61,12 +61,10 @@ impl<'a> ParallelSimpleHashJoin<'a> {
 
 	pub fn equi_join(&mut self, left_col: usize, right_col: usize) -> Vec<Record> {
 		// Number of records in left and right tables
-		let left_size = self.left.get_num_records();
 		let right_size = self.right.get_num_records();
 
-		let mut hash_table: HashMap<&i32, Vec<&Record>> = HashMap::with_capacity(left_size);
+		let mut hash_table: HashMap<&i32, Vec<&Record>> = HashMap::with_capacity(right_size);
 
-		// Get the right table's view of its records
 		let right_records = self.right.record_view();
 		assert!(right_size == right_records.len());
 
@@ -78,7 +76,7 @@ impl<'a> ParallelSimpleHashJoin<'a> {
 			// Map right join column value the record itself
 			hash_table.entry(right_column_value).or_insert(Vec::new()).push(r);
 		}
-
+		
 		self.left.record_par_iterator()
 			.chunks(CHUNK_SIZE)
 			// Map each left record chunk to group of joined records [R_1, ..., R_k]
@@ -94,7 +92,6 @@ impl<'a> ParallelSimpleHashJoin<'a> {
 				.flatten()
 				.collect()
 			})
-
 			// Flatten group of joined records into one [R_1, ..., R_k, ..., R_n]
 			.flatten()
 			
