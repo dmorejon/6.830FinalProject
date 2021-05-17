@@ -1,6 +1,7 @@
 use std::{clone::Clone, slice::Iter};
 use std::cmp::min;
 use rayon::iter::IntoParallelRefIterator;
+use rayon::prelude::ParallelSliceMut;
 
 use crate::record::Record;
 use crate::readtable::fetch_records;
@@ -45,6 +46,16 @@ impl SimpleTable {
   // Expensive operation
   pub fn copy_to_vec_of_records(&self) -> Vec<Record> {
     self.records.clone()
+  }
+
+  // Expensive operation
+  // Sorts the records by column in parrallel
+  pub fn sort_by(&mut self, i: usize) {
+    // Unstable sort will be faster for us because
+    // stable sorting doesn't matter and we are unlikely
+    // to have almost-sorted records or a handful of sorted
+    // record subvecs that will be merged
+    self.records.par_sort_unstable_by_key(|r| *r.get_column(i));
   }
 
   pub fn get_num_records(&self) -> usize {

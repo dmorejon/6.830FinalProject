@@ -1,7 +1,10 @@
 extern crate joinlib;
+use std::fs;
+
 use joinlib::table::SimpleTable;
 use joinlib::record::Record;
 pub mod tablegenerator;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use tablegenerator::generate_table;
 use tablegenerator::generate_right_table;
 use tablegenerator::write_table;
@@ -54,23 +57,29 @@ fn format_row_count(mut num_rows: usize) -> String {
 }
 
 fn main() -> () {
-	// IMPORTANT:
-	// YOU MUST MAKE SURE THAT THE DIRECTORIES EXIST.
-	// 	- tables/joinN
-	// 	- tables/joinN/rights/
-	// DON'T FORGET TO CHANGE THE TABLE NAMES WHEN YOU CHANGE PARAMS
-
 	// General Params
-	let join_name = "10K_left_select20";
-	let join_dir = format!("tables/{}/", join_name);
+	let join_name = "10M_left_select20";
+	let tables_dir = format!("tables/{}/", join_name);
+	let right_tables_dir = format!("tables/{}/rights", join_name);
+
+	// Create dirs
+	let _ = fs::create_dir_all(&tables_dir).unwrap();
+	let _ = fs::create_dir_all(&right_tables_dir).unwrap();
+	
+	// Scaling factor
+	// 1k for 10k left table
+	// 10k for 100k left table
+	// 100k for 1M left table
+	// 1M for 10M left table, etc
+	let scale = 1_000_000;
 
 	// ******************** Left Table Params *******************
-	let left_rows = 10*1000;
+	let left_rows = 10 * scale;
 	let left_cols = 10;
 	println!("left_rows: {:?}", left_rows);
 
 	let left_table_name = format!("{}R_{}C.csv", format_row_count(left_rows), left_cols);
-	let left_path = join_dir.to_owned() + &left_table_name;
+	let left_path = tables_dir.to_owned() + &left_table_name;
 	
 	// **********************************************************
 	
@@ -82,16 +91,16 @@ fn main() -> () {
 
 	// To generate left table, uncomment following
 	
-	// let left_table = generate_table(left_config.left_rows, left_config.left_cols);
-	// write_table(&left_table, &left_config.path);
+	let left_table = generate_table(left_config.left_rows, left_config.left_cols);
+	write_table(&left_table, &left_config.path);
 
 	// To use existing left table, uncomment following
 	let left_table = SimpleTable::new(&left_path).copy_to_vec_of_records();
 
 	// ******************** Right Table Params ********************
-	for i in [2, 4, 6, 8, 10].iter() {
+	vec![2, 4, 6, 8, 10].par_iter().for_each(|i| {
 
-		let right_rows = i * 1000;
+		let right_rows = i * scale;
 		let right_cols = 10;
 		println!("right_rows: {:?}", right_rows);
 
@@ -109,7 +118,7 @@ fn main() -> () {
 		// Ensure sizes + selectivity play friendly w/ each other
 		assert!(right_rows >= ((join_selectivity_perc * left_rows) / 100));
 		
-		let right_path = join_dir.to_owned() + "rights/" + &right_table_name;
+		let right_path = tables_dir.to_owned() + "rights/" + &right_table_name;
 	
 		// **********************************************************
 
@@ -125,5 +134,5 @@ fn main() -> () {
 
 		let right_table = generate_right_table(rc.left_table, rc.right_rows, rc.right_cols, rc.join_selectivity, rc.left_col, rc.right_col);
 		write_table(&right_table, &rc.path);
-	}
+	});
 }

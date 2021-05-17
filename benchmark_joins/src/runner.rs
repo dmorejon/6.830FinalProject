@@ -182,6 +182,28 @@ fn run_psh_join(pshj: &mut ParallelSimpleHashJoin, left_col: usize, right_col: u
 	}
 }
 
+fn run_pulf_join(pulf: &mut ParallelUnaryLeapFrogJoin, left_col: usize, right_col: usize, t1: Table, t2: Table) -> JoinRunResult {
+	// Run the join
+	flush_caches();
+	let start: Instant = Instant::now();
+	let results: Vec<Record> = pulf.equi_join(left_col, right_col);
+	let end: Instant = Instant::now();
+
+	// Output result
+	JoinRunResult {
+		join_type: JoinAlgoDetails {
+			join_name: JoinAlgos::ParallelUnaryLeapFrogJoin,
+			left_block_size: 0,
+			right_block_size: 0,
+		},
+		execution_time_nanos: end.duration_since(start).as_nanos(),
+		outer_table: t1,
+		inner_table: t2,
+		num_emitted_records: results.len(),
+		trial_number: -1,
+	}
+}
+
 pub fn run_one_join(
 	table1_name: &str, 
 	table2_name: &str,
@@ -243,7 +265,14 @@ pub fn run_one_join(
 				left_col, 
 				right_col,
 				t1, t2)
-		}
+		},
+		JoinAlgos::ParallelUnaryLeapFrogJoin => {
+			run_pulf_join(
+				&mut ParallelUnaryLeapFrogJoin::new(table1, table2), 
+				left_col, 
+				right_col,
+				t1, t2)
+		},
 	}
 }
 

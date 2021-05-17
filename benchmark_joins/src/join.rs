@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 use serde::{Serialize, Deserialize};
 use strum_macros::EnumIter;
 
@@ -13,6 +13,7 @@ pub enum JoinAlgos {
   RadixJoin,
   PNLJoin,
   ParallelSimpleHashJoin,
+  ParallelUnaryLeapFrogJoin,
 }
 
 
@@ -152,7 +153,7 @@ impl<'a> SimpleHashJoin<'a> {
     // we know the the join will be no larger than left table
     let mut join_result = Vec::with_capacity(left_size);
 
-    let mut hash_table: HashMap<&i32, Vec<&Record>> = HashMap::new();
+    let mut hash_table: HashMap<&i32, Vec<&Record>> = HashMap::with_capacity(right_size);
 
     // Get the right table's view of its records
     let right_records = self.right.record_view();
@@ -187,6 +188,7 @@ impl<'a> SimpleHashJoin<'a> {
         }
       };
     }
+
     self.left.rewind();
 
     join_result
