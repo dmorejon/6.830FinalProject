@@ -6,7 +6,7 @@ To run benchmarking, navigate to `6.830FinalProject/benchmark_joins`. From there
 
 ```./profiler.sh tables/10K_left_select10 hash,bnl,nl 3```
 
-And that will run the different joins specified for 3 trials each, time them, and put the results in `outfile_json`. Specifically, this will **overrwite the contents of file**. For example, the command above will generate `experiments/10K_left_select10/10K_left_select10.json` and have content similar to:
+And that will run the different joins specified for 3 trials each, time them, and put the results in `outfile_json`. Specifically, this will **overrwrite the contents of file**. For example, the command above will generate `experiments/10K_left_select10/10K_left_select10.json` and have content similar to:
 ```JSON
 [
   {
@@ -56,11 +56,8 @@ And that will run the different joins specified for 3 trials each, time them, an
 
 Note the Block-Nested-Loops Join will be run with a combination of different block sizes that is specified in the profiling script. Further, the profiling script calls `cargo run` under the hood. Specifically, this is also a valid run
 
-```cargo run [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo] [num_trials]```
+```cargo run --release [left_table] [right_tables] [json_outfile] [left_block_size] [right_block_size] [join_algo] [num_trials]```
 
 ## Table Generation Instructions
    To generate a table, go to `src/bin/generate/main.rs` and change the config structs, then run with
-   ```cargo run --bin generate```
-
-   You must create the appropriate `tables/joinN/` and `tables/joinN/rights/` directories if they do not
-   exist.
+   ```cargo run --release --bin generate```
