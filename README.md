@@ -1,5 +1,7 @@
 # 6.830FinalProject
 
+This repository contains various in-memory equi-join algorithms and associated profiling code. There is also support for generating tables with specific properties like number of rows, columns, and output join selectivity. 
+
 ## Benchmark Running Instructions
 
 To run benchmarking, navigate to `6.830FinalProject/benchmark_joins`. From there, you can run the `profiler.sh` script via, e.g.,:
