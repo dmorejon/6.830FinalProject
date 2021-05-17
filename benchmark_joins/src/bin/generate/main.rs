@@ -58,7 +58,7 @@ fn format_row_count(mut num_rows: usize) -> String {
 
 fn main() -> () {
 	// General Params
-	let join_name = "10M_left_select20";
+	let join_name = "10K_left_select20";
 	let tables_dir = format!("tables/{}/", join_name);
 	let right_tables_dir = format!("tables/{}/rights", join_name);
 
@@ -71,7 +71,7 @@ fn main() -> () {
 	// 10k for 100k left table
 	// 100k for 1M left table
 	// 1M for 10M left table, etc
-	let scale = 1_000_000;
+	let scale = 1_000;
 
 	// ******************** Left Table Params *******************
 	let left_rows = 10 * scale;
