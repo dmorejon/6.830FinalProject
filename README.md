@@ -6,7 +6,7 @@ To run benchmarking, navigate to `6.830FinalProject/benchmark_joins`. From there
 
 ```./profiler.sh tables/10K_left_select10 hash,bnl,nl 3```
 
-And that will run the different joins specified for 3 trials each, time them, and put the results in `outfile_json`. Specifically, this will **overrwrite the contents of file**. For example, the command above will generate `experiments/10K_left_select10/10K_left_select10.json` and have content similar to:
+The possible algorithm names are `nl, bnl, pnl, hash, psh, radix, pulf`. The command will run the different joins specified for 3 trials each, time them, and put the results in `outfile_json`. Specifically, this will **overwrite the contents of file**. For example, the command above will generate `experiments/10K_left_select10/10K_left_select10.json` and have content similar to:
 ```JSON
 [
   {
